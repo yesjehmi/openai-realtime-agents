@@ -15,9 +15,10 @@ For full documentation, guides, and API references, see the official [OpenAI Age
 
 **NOTE:** For a version that does not use the OpenAI Agents SDK, see the [branch without-agents-sdk](https://github.com/openai/openai-realtime-agents/tree/without-agents-sdk).
 
-There are two main patterns demonstrated:
+There are three main patterns demonstrated:
 1. **Chat-Supervisor:** A realtime-based chat agent interacts with the user and handles basic tasks, while a more intelligent, text-based supervisor model (e.g., `gpt-4.1`) is used extensively for tool calls and more complex responses. This approach provides an easy onramp and high-quality answers, with a small increase in latency.
 2. **Sequential Handoff:** Specialized agents (powered by realtime api) transfer the user between them to handle specific user intents. This is great for customer service, where user intents can be handled sequentially by specialist models that excel in a specific domains. This helps avoid the model having all instructions and tools in a single agent, which can degrade performance.
+3. **Card Benefits Agent:** A specialized agent for card benefits inquiry that integrates with external agent endpoints. This demonstrates how to connect realtime agents with external AI services, with fallback mechanisms for resilient operation.
 
 ## Setup
 
@@ -203,6 +204,33 @@ sequenceDiagram
 ```
 
 </details>
+
+## Card Benefits Agent
+
+The Card Benefits Agent demonstrates integration with external AI agent endpoints for specialized domain knowledge.
+
+### Features
+- **External Agent Integration**: Connects to a card benefits agent endpoint at `https://7024509b0dc1.ngrok-free.app/chat/`
+- **Fallback System**: Provides mock data responses when the external agent is offline
+- **Card Information Queries**: Handles queries about card lists, specific card benefits, and general card-related questions
+
+### Implementation Details
+- **Agent Configuration**: Located in `src/app/agentConfigs/cardBenefits/`
+- **API Integration**: `agentIntegration.ts` handles external agent communication
+- **Supervisor Pattern**: Uses a supervisor agent to process and format responses
+- **Error Handling**: Graceful degradation with informative mock responses
+
+### Usage Examples
+- "더모아카드 알려줘" → Returns detailed benefits for Deomoa Card
+- "카드 목록 알려줘" → Lists all available cards
+- "포인트플러스카드 혜택 알려줘" → Returns PointPlus Card benefits
+
+### Architecture
+```
+User Query → Realtime Agent → Supervisor API → External Agent Endpoint
+                                    ↓ (if offline)
+                           Mock Data Fallback System
+```
 
 # Other Info
 ## Next Steps
