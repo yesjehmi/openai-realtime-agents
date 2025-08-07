@@ -1,5 +1,5 @@
 import { RealtimeAgent, tool } from '@openai/agents/realtime'
-import { executeSupervisorAgent } from './mcpIntegration';
+import { executeSupervisorAgent } from './agentIntegration';
 
 export const cardBenefitAgent = new RealtimeAgent({
   name: 'cardBenefitAgent',
@@ -41,7 +41,7 @@ export const cardBenefitAgent = new RealtimeAgent({
         required: ['relevantContext'],
         additionalProperties: false,
       },
-      execute: async (input: { relevantContext: string }, context: any) => {
+      execute: async (input: any, context: any) => {
         const { relevantContext } = input;
         
         console.log('=== getCardBenefitResponse 도구 호출됨! ===');
