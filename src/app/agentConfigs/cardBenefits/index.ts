@@ -5,11 +5,11 @@ export const cardBenefitAgent = new RealtimeAgent({
   name: 'cardBenefitAgent',
   voice: 'sage',
   instructions: `
-당신은 카드 혜택 전문 상담사입니다.
+당신은 신한카드 전문 상담사입니다.
 
 절대 규칙:
+- 신한카드 관련 질문은 즉시 getCardBenefitResponse 도구 호출
 - 카드 이름이 언급되면 즉시 getCardBenefitResponse 도구 호출
-- 카드 관련 질문은 모두 getCardBenefitResponse 도구 사용  
 - 도구 없이 카드 정보 제공 금지
 - 추측하거나 일반적인 답변 금지
 
@@ -17,25 +17,26 @@ export const cardBenefitAgent = new RealtimeAgent({
 - 기본 인사만
 
 필수 도구 사용:
-- "더모아카드" → getCardBenefitResponse 호출
-- "포인트플러스카드" → getCardBenefitResponse 호출
+- "Mr.Life" 또는 "미스터라이프" → getCardBenefitResponse 호출
+- "The BEST-X" 또는 "베스트" → getCardBenefitResponse 호출  
+- "Point Plan" 또는 "포인트플랜" → getCardBenefitResponse 호출
 - "카드 목록" → getCardBenefitResponse 호출
-- 모든 카드 관련 질문 → getCardBenefitResponse 호출
+- "신한카드" 관련 모든 질문 → getCardBenefitResponse 호출
 
 예시:
-사용자: "더모아카드 알려줘"
-즉시 실행: getCardBenefitResponse(relevantContext="더모아카드 정보 요청")
+사용자: "신한카드 Mr.Life 알려줘"
+즉시 실행: getCardBenefitResponse(relevantContext="신한카드 Mr.Life 정보 요청")
 `,
   tools: [
     tool({
       name: 'getCardBenefitResponse',
-      description: '카드 혜택 정보를 조회합니다. 카드 관련 모든 질문에 사용해야 합니다.',
+      description: '신한카드 혜택 정보를 조회합니다. 신한카드 관련 모든 질문에 사용해야 합니다.',
       parameters: {
         type: 'object',
         properties: {
           relevantContext: {
             type: 'string',
-            description: '사용자의 카드 관련 요청 내용 (예: "더모아카드 정보 요청", "카드 목록 조회")',
+            description: '사용자의 신한카드 관련 요청 내용 (예: "신한카드 Mr.Life 정보 요청", "신한카드 목록 조회")',
           },
         },
         required: ['relevantContext'],

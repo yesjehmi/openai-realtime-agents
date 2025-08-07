@@ -1,16 +1,19 @@
 // OpenAI API는 서버 사이드 API 라우트를 통해 호출
 
-// 카드혜택 에이전트 서비스
+// 신한카드 에이전트 서비스
 export class CardBenefitAgentService {
   public agentUrl: string; // public으로 변경하여 외부에서 접근 가능
 
-  constructor(agentUrl: string = 'https://7024509b0dc1.ngrok-free.app/chat/') {
+  constructor(agentUrl: string = 'https://8f04a771295a.ngrok-free.app/chat') {
     this.agentUrl = agentUrl;
   }
 
-  // 카드혜택 에이전트에 요청을 보내는 기본 함수
-  private async callAgent(userQuery: string): Promise<any> {
+  // 신한카드 에이전트에 요청을 보내는 기본 함수
+  private async callAgent(userQuery: string, sessionId?: string): Promise<any> {
     try {
+      // 세션 ID 생성 (전달받지 않은 경우)
+      const finalSessionId = sessionId || `shinhan-card-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
       const response = await fetch(this.agentUrl, {
         method: 'POST',
         headers: {
@@ -19,7 +22,7 @@ export class CardBenefitAgentService {
         },
         body: JSON.stringify({
           message: userQuery,
-          conversation_id: `card-benefit-${Date.now()}`
+          session_id: finalSessionId
         })
       });
       
@@ -36,26 +39,27 @@ export class CardBenefitAgentService {
         throw new Error(`에이전트 오류: ${result.error}`);
       }
       
+      // 신한카드 에이전트 응답에서 response 필드 추출
       return result.response || result.message || result;
     } catch (error) {
-      console.error('카드혜택 에이전트 연결 오류:', error);
-      throw new Error('카드혜택 에이전트에 연결할 수 없습니다: ' + (error as Error).message);
+      console.error('신한카드 에이전트 연결 오류:', error);
+      throw new Error('신한카드 에이전트에 연결할 수 없습니다: ' + (error as Error).message);
     }
   }
 
   // 모든 카드 목록 가져오기
-  async getAllCardListInfo(): Promise<any> {
-    return await this.callAgent('전체 카드 목록을 알려주세요');
+  async getAllCardListInfo(sessionId?: string): Promise<any> {
+    return await this.callAgent('신한카드 전체 목록을 알려주세요', sessionId);
   }
 
   // 특정 카드 혜택 정보 조회
-  async getCardBenefitInfo(cardName: string): Promise<any> {
-    return await this.callAgent(`${cardName}의 혜택 정보를 알려주세요`);
+  async getCardBenefitInfo(cardName: string, sessionId?: string): Promise<any> {
+    return await this.callAgent(`${cardName}의 혜택 정보를 자세히 알려주세요`, sessionId);
   }
 
   // 일반 카드 관련 질의
-  async queryCardInfo(query: string): Promise<any> {
-    return await this.callAgent(query);
+  async queryCardInfo(query: string, sessionId?: string): Promise<any> {
+    return await this.callAgent(query, sessionId);
   }
 }
 
