@@ -114,8 +114,8 @@ export const getCardTools = (): FunctionTool[] => {
         additionalProperties: false,
       },
       execute: async (args: any) => {
-        // MCP 서버는 url 파라미터만 받으므로 card_id를 url로 변환
-        const url = `https://api.example.com/cards/${args.card_id}`;
+        // MCP 서버는 url 파라미터만 받으므로 card_id를 실제 카드고릴라 URL로 변환
+        const url = `https://www.card-gorilla.com/card/detail/${args.card_id}`;
         return await mcpToolLogic.get_card_info({ url }, [], undefined);
       },
     }),
@@ -305,7 +305,7 @@ export const mcpToolLogic = {
   },
 
   get_card_info: async (args: { url: string }, transcriptLogsFiltered: any[], addTranscriptBreadcrumb?: (title: string, data?: any) => void) => {
-    console.log(`🔍 URL "${args.url}"의 카드 정보 조회 중...`);
+    console.log(`🔍 카드고릴라 URL "${args.url}"의 카드 정보 조회 중...`);
     console.log('🔧 MCP 클라이언트 연결 상태:', mcpClient.isServerConnected());
     console.log('🔧 사용 가능한 도구들:', mcpClient.getAvailableTools().map(t => t.name));
     
