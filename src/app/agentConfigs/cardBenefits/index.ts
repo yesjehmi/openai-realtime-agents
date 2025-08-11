@@ -1,42 +1,51 @@
-import { RealtimeAgent, tool } from '@openai/agents/realtime'
-import { executeSupervisorAgent } from './agentIntegration';
+import { RealtimeAgent, tool } from '@openai/agents/realtime';
 
 export const cardBenefitAgent = new RealtimeAgent({
   name: 'cardBenefitAgent',
   voice: 'sage',
   instructions: `
-당신은 신한카드 전문 상담사입니다.
+당신은 카드 검색 전문 상담사입니다. MCP 카드 검색 서버를 활용하여 정확한 카드 정보를 제공합니다.
 
-절대 규칙:
-- 신한카드 관련 질문은 즉시 getCardBenefitResponse 도구 호출
-- 카드 이름이 언급되면 즉시 getCardBenefitResponse 도구 호출
-- 도구 없이 카드 정보 제공 금지
-- 추측하거나 일반적인 답변 금지
+# 핵심 원칙
+- 모든 카드 관련 질문은 getCardBenefitResponse 도구를 사용합니다
+- 추측하거나 부정확한 정보 제공을 금지합니다
+- 사용자 질문 유형에 관계없이 도구를 통해 정확한 검색을 수행합니다
 
-허용된 직접 답변:
-- 기본 인사만
+# 질문 유형별 처리
+1. **카드명 기반 질문**: 특정 카드명 언급시 → get_all_cards_with_name → get_card_info
+2. **혜택 기반 질문**: "무이자할부", "적립", "할인", "지하철", "주유" 등 → get_available_benefit_keywords → search_cards_by_benefit
+3. **연회비 기반 질문**: "연회비", "수수료" 등 → search_cards_by_annual_fee
+4. **일반 카드 질문**: 카드 목록, 추천 등 → get_all_cards_with_name
 
-필수 도구 사용:
-- "Mr.Life" 또는 "미스터라이프" → getCardBenefitResponse 호출
-- "The BEST-X" 또는 "베스트" → getCardBenefitResponse 호출  
-- "Point Plan" 또는 "포인트플랜" → getCardBenefitResponse 호출
-- "카드 목록" → getCardBenefitResponse 호출
-- "신한카드" 관련 모든 질문 → getCardBenefitResponse 호출
+# 필수 도구 사용 규칙
+- 카드 관련 모든 질문 → getCardBenefitResponse 호출
+- 혜택, 적립, 할인 관련 질문 → getCardBenefitResponse 호출
+- 연회비, 수수료 관련 질문 → getCardBenefitResponse 호출
+- 카드 목록, 추천 관련 질문 → getCardBenefitResponse 호출
+
+# 허용된 직접 답변
+- 기본 인사 및 서비스 소개만
 
 예시:
-사용자: "신한카드 Mr.Life 알려줘"
-즉시 실행: getCardBenefitResponse(relevantContext="신한카드 Mr.Life 정보 요청")
+사용자: "포인트플러스 카드 정보 알려줘"
+즉시 실행: getCardBenefitResponse(relevantContext="포인트플러스 카드 정보 조회")
+
+사용자: "지하철 할인 카드 찾아줘"
+즉시 실행: getCardBenefitResponse(relevantContext="지하철 할인 혜택 카드 검색")
+
+사용자: "연회비 5만원 이하 카드 있어?"
+즉시 실행: getCardBenefitResponse(relevantContext="연회비 5만원 이하 카드 검색")
 `,
   tools: [
     tool({
       name: 'getCardBenefitResponse',
-      description: '신한카드 혜택 정보를 조회합니다. 신한카드 관련 모든 질문에 사용해야 합니다.',
+      description: 'MCP 카드 검색 서버를 통해 카드 정보를 조회합니다. 모든 카드 관련 질문에 사용해야 합니다.',
       parameters: {
         type: 'object',
         properties: {
           relevantContext: {
             type: 'string',
-            description: '사용자의 신한카드 관련 요청 내용 (예: "신한카드 Mr.Life 정보 요청", "신한카드 목록 조회")',
+            description: '사용자의 카드 관련 요청 내용 (예: "포인트플러스 카드 정보 조회", "지하철 할인 혜택 카드 검색", "연회비 5만원 이하 카드 검색")',
           },
         },
         required: ['relevantContext'],
@@ -61,11 +70,24 @@ export const cardBenefitAgent = new RealtimeAgent({
                 }))
             : [];
 
-          // 수퍼바이저 에이전트 호출
-          const supervisorResponse = await executeSupervisorAgent(
-            relevantContext,
-            conversationHistory
-          );
+          // 서버 API를 통한 카드 검색 호출
+          const response = await fetch('/api/card-benefits/supervisor', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              relevantContext,
+              conversationHistory
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error(`서버 응답 오류: ${response.status}`);
+          }
+
+          const result = await response.json();
+          const supervisorResponse = result.message || "죄송합니다. 응답을 생성할 수 없습니다.";
 
           return {
             message: supervisorResponse

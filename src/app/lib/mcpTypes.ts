@@ -43,18 +43,10 @@ export interface MCPToolCallResponse {
 
 // 카드 관련 도구 타입들
 export interface CardTools {
-  search_cards: {
-    parameters: {
-      query: string;
-    };
-    response: {
-      cards: Array<{ id: string; name: string; description?: string; }>;
-    };
-  };
   get_all_cards_with_name: {
     parameters: Record<string, never>; // 매개변수 없음
     response: {
-      cards: Array<{ id: string; name: string; }>;
+      cards: Array<{ name: string; url: string; idx: string; }>;
     };
   };
   get_available_benefit_keywords: {
@@ -68,16 +60,15 @@ export interface CardTools {
       benefit_keyword: string;
     };
     response: {
-      cards: Array<{ id: string; name: string; benefits: string[]; }>;
+      cards: Array<{ name: string; benefits: string[]; }>;
     };
   };
   search_cards_by_annual_fee: {
     parameters: {
-      min_fee?: number;
       max_fee?: number;
     };
     response: {
-      cards: Array<{ id: string; name: string; annual_fee: number; }>;
+      cards: Array<{ name: string; annual_fee: number; }>;
     };
   };
   get_card_info: {
@@ -86,11 +77,10 @@ export interface CardTools {
     };
     response: {
       card: {
-        id: string;
         name: string;
-        annual_fee: number;
-        benefits: string[];
-        details: string;
+        benefits?: string;
+        annual_fee?: string;
+        features?: string;
       };
     };
   };

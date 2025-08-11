@@ -288,7 +288,6 @@ export class MCPClient {
    */
   private setFallbackTools(): void {
     this.availableTools = [
-      { name: 'search_cards', description: '카드 검색', inputSchema: {} },
       { name: 'get_all_cards_with_name', description: '모든 카드 목록 조회', inputSchema: {} },
       { name: 'get_available_benefit_keywords', description: '혜택 키워드 조회', inputSchema: {} },
       { name: 'search_cards_by_benefit', description: '혜택별 카드 검색', inputSchema: {} },
