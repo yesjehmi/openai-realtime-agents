@@ -24,6 +24,7 @@ import { createModerationGuardrail } from "@/app/agentConfigs/guardrails";
 import { allAgentSets, defaultAgentSetKey } from "@/app/agentConfigs";
 import { cardBenefitScenario, cardBenefitCompanyName } from "@/app/agentConfigs/cardBenefits";
 import { mcpIntegrationScenario, mcpIntegrationCompanyName } from "@/app/agentConfigs/mcpIntegration";
+import { initializeMCPClient } from "@/app/lib/mcpTools";
 
 // Map used by connect logic for scenarios defined via the SDK.
 const sdkScenarioMap: Record<string, RealtimeAgent[]> = {
@@ -128,6 +129,11 @@ function App() {
   };
 
   useHandleSessionHistory();
+
+  // MCP 클라이언트 초기화
+  useEffect(() => {
+    initializeMCPClient();
+  }, []);
 
   useEffect(() => {
     let finalAgentConfig = searchParams.get("agentConfig");

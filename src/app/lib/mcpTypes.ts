@@ -43,6 +43,14 @@ export interface MCPToolCallResponse {
 
 // 카드 관련 도구 타입들
 export interface CardTools {
+  search_cards: {
+    parameters: {
+      query: string;
+    };
+    response: {
+      cards: Array<{ id: string; name: string; description?: string; }>;
+    };
+  };
   get_all_cards_with_name: {
     parameters: Record<string, never>; // 매개변수 없음
     response: {
@@ -74,7 +82,7 @@ export interface CardTools {
   };
   get_card_info: {
     parameters: {
-      card_id: string;
+      url: string;
     };
     response: {
       card: {
