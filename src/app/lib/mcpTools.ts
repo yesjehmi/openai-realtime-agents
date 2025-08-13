@@ -341,7 +341,7 @@ export const getAllMCPTools = (): FunctionTool[] => {
 
 /**
  * MCP 클라이언트 초기화 함수
- * localhost:8000의 MCP 서버에 연결
+ * https://2b0e1a284992.ngrok-free.app 의 MCP 서버에 연결
  */
 export const initializeMCPClient = async (): Promise<void> => {
   try {
@@ -356,7 +356,7 @@ export const initializeMCPClient = async (): Promise<void> => {
     }
   } catch (error) {
     console.warn('⚠️ MCP 클라이언트 초기화 실패:', error);
-    console.log('💡 MCP 서버(localhost:8000)가 실행되지 않았을 수 있습니다. 기본 모드로 작동합니다.');
+    console.log('💡 MCP 서버(https://2b0e1a284992.ngrok-free.app)가 실행되지 않았을 수 있습니다. 기본 모드로 작동합니다.');
     // 에러가 발생해도 앱이 중단되지 않도록 처리
   }
 };

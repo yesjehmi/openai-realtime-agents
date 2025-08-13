@@ -1,6 +1,6 @@
 /**
  * MCP (Model Context Protocol) 클라이언트
- * localhost:8000의 MCP 서버와 연동하는 클린한 TypeScript 클라이언트
+ * https://2b0e1a284992.ngrok-free.app 의 MCP 서버와 연동하는 클린한 TypeScript 클라이언트
  */
 
 import { v4 as uuidv4 } from 'uuid';
@@ -245,7 +245,7 @@ export class MCPClient {
         // 네트워크 연결 오류
         if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
           console.error('❌ 네트워크 연결 실패:', error.message);
-          throw new Error('MCP 서버에 연결할 수 없습니다. localhost:8000이 실행 중인지 확인해주세요.');
+          throw new Error('MCP 서버에 연결할 수 없습니다. https://2b0e1a284992.ngrok-free.app 이 실행 중인지 확인해주세요.');
         }
       }
       
